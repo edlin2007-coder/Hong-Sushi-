@@ -219,7 +219,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 <div style="height: 10px; overflow: hidden;"></div></div>
 
 <div style="text-align:center;"><div style="height: 10px; overflow: hidden;"></div>
-<a class="wsite-button wsite-button-small wsite-button-highlight" href="https://gh.hongsushi.ca" target="_blank">
+<a class="wsite-button wsite-button-small wsite-button-highlight" href="https://www.hong-sushi.com" target="_blank">
 <span class="wsite-button-inner">online / text order</span>
 </a>
 <div style="height: 10px; overflow: hidden;"></div></div>
@@ -455,6 +455,41 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 		}
 		catch(ex) {}
 	})(window._W && _W.jQuery);
+</script>
+
+
+<div id="orderOfflineNotice" style="display:none; background-color:#ffe0e0; border:1px solid #ff0000; padding:15px; margin:20px; font-family:Arial, sans-serif;">
+  Online order is not available at this time. Please do one of the following:
+  <ul>
+    <li>Tel: 604.298.3111</li>
+    <li>Text: 236.515.5265</li>
+    <li>Email: <a href="mailto:GoHongSushi@Gmail.Com">GoHongSushi@Gmail.Com</a></li>
+  </ul>
+</div>
+
+<script>
+  (function() {
+    // The link to check
+    var orderLink = document.querySelector('a[href="https://www.hong-sushi.com"]');
+    var notice = document.getElementById('orderOfflineNotice');
+
+    if (!orderLink || !notice) return;
+
+    var linkActive = false;
+
+    // Try to load the link as an image to check if online
+    var testImg = new Image();
+    testImg.onload = function() { linkActive = true; };
+    testImg.onerror = function() { linkActive = false; };
+    testImg.src = orderLink.href + '?cacheBuster=' + new Date().getTime();
+
+    // After 7 seconds, show notice if link not active
+    setTimeout(function() {
+      if (!linkActive) {
+        notice.style.display = 'block';
+      }
+    }, 7000);
+  })();
 </script>
 
 
