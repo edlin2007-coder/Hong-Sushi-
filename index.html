@@ -245,7 +245,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 </a>
 
 	
-<a id="statusButton" class="status-button" href="#">Checking status...</a>
+<br/?<a id="statusButton" class="status-button" href="#">Checking status...</a>
 
 <script>
 async function updateStatus() {
@@ -255,12 +255,12 @@ async function updateStatus() {
     const text = (await response.text()).trim().toLowerCase();
 
     if (text === 'online') {
-      button.textContent = '*******';
+      button.textContent = '***';
      // button.href = 'https://www.hong-sushi.com';
       button.classList.add('online');
       button.classList.remove('offline');
     } else {
-      button.textContent = '*******';
+      button.textContent = '***';
      // button.href = 'maintenance.html';
       button.classList.add('offline');
       button.classList.remove('online');
