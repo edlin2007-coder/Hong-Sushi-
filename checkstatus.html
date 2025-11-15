@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>HONG SUSHI - Online Ordering</title>
+  <title>HONG SUSHI - Server Status</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -52,7 +52,7 @@ async function checkServerStatus() {
     if (!response.ok) throw new Error("GitHub file not accessible");
 
     const text = await response.text();
-    const status = text.trim().toLowerCase(); // expected "online" or "offline"
+    const status = text.trim().toLowerCase(); // "online" or "offline"
 
     loader.style.display = "none";
 
@@ -60,10 +60,13 @@ async function checkServerStatus() {
       statusDiv.textContent = "Server Online";
       statusDiv.classList.add("online");
       statusDiv.classList.remove("offline");
+      // Redirect to main site
+      window.location.href = "https://www.hong-sushi.com";
     } else {
       statusDiv.textContent = "Server Offline";
       statusDiv.classList.add("offline");
       statusDiv.classList.remove("online");
+      // Redirect to maintenance page
       setTimeout(() => {
         window.location.href = "maintenance.html";
       }, 2000);
@@ -80,7 +83,7 @@ async function checkServerStatus() {
   }
 }
 
-// Run check on page load
+// Run on page load
 checkServerStatus();
   </script>
 </body>
