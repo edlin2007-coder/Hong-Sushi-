@@ -36,32 +36,36 @@
   <div class="status">Checking server status...</div>
 
 <script>
-async function checkMainSite() {
-  try {
-    // Set a timeout for fetch (3 seconds)
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
+<script>
+function checkServer() {
+    const img = new Image();
+    const start = Date.now();
 
-    // Attempt to fetch the main site on port 80 (HTTP)
-    const response = await fetch('http://174.6.65.67', { signal: controller.signal });
-    clearTimeout(timeout);
+    // Set a timeout (optional)
+    const timeout = setTimeout(() => {
+        console.log("Server timed out → redirect");
+        window.location.href = "/maintenance.html";
+    }, 5000); // 5 seconds
 
-    if (response.ok) {
-      console.log("Main site is online.");
-      // Stay on current page or redirect to home if needed
-      // window.location.href = "http://hongsushi.ca/";
-    } else {
-      console.log("Main site returned error, redirecting to maintenance page.");
-      window.location.href = "https://edlin2007-coder.github.io/hong-sushi-maintenance/maintenance.html";
-    }
-  } catch (err) {
-    console.log("Main site unreachable, redirecting to maintenance page.");
-    window.location.href = "https://edlin2007-coder.github.io/hong-sushi-maintenance/maintenance.html";
-  }
+    img.onload = function () {
+        clearTimeout(timeout);
+        console.log("Server online");
+    };
+
+    img.onerror = function () {
+        clearTimeout(timeout);
+        console.log("Server offline → redirect");
+        window.location.href = "/maintenance.html";
+    };
+
+    // Use timestamp to bypass browser cache
+    img.src = "http://174.6.65.67/icon.png?t=" + Date.now();
 }
 
-// Run the check immediately
-checkMainSite();
+// Test every 5 seconds, or call once on load
+window.onload = checkServer;
+</script>
+
 </script>
 
 
