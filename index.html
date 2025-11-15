@@ -222,6 +222,41 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 <a class="wsite-button wsite-button-small wsite-button-highlight" href="checkstatus.html" target="_blank">
 <span class="wsite-button-inner">online / text order</span>
 </a>
+
+	
+<a id="statusButton" class="status-button" href="#">Checking status...</a>
+
+<script>
+async function updateStatus() {
+  const button = document.getElementById('statusButton');
+  try {
+    const response = await fetch('https://raw.githubusercontent.com/edlin2007-coder/Hong-Sushi-/main/status.txt');
+    const text = (await response.text()).trim().toLowerCase();
+
+    if (text === 'online') {
+      button.textContent = 'Order Online';
+      button.href = 'https://www.hong-sushi.com';
+      button.classList.add('online');
+      button.classList.remove('offline');
+    } else {
+      button.textContent = 'Site Offline';
+      button.href = 'maintenance.html';
+      button.classList.add('offline');
+      button.classList.remove('online');
+    }
+
+  } catch (err) {
+    button.textContent = 'Status Unknown';
+    button.href = 'maintenance.html';
+    button.classList.add('offline');
+    button.classList.remove('online');
+    console.error('Error fetching status:', err);
+  }
+}
+
+updateStatus();
+</script>
+	
 <div style="height: 10px; overflow: hidden;"></div></div>
 
 <div><div class="wsite-multicol"><div class="wsite-multicol-table-wrap" style="margin:0 -15px;">
