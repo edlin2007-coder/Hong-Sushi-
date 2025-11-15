@@ -40,30 +40,30 @@ function checkOnlineStatus() {
     const testImage = new Image();
     const statusBox = document.getElementById("onlineStatus");
 
-    // When server is ONLINE
+    // Server ONLINE → redirect to main domain
     testImage.onload = function() {
-        statusBox.textContent = "Server online — redirecting...";
-        window.location.href = "http://174.6.65.67/";
+        statusBox.textContent = "Server online — loading website...";
+        window.location.href = "https://www.hong-sushi.com/";
     };
 
-    // When server is OFFLINE or unreachable
+    // Server OFFLINE → redirect to maintenance page
     testImage.onerror = function() {
-        statusBox.textContent = "Server offline — loading maintenance page...";
+        statusBox.textContent = "Server offline — sending to maintenance page...";
         setTimeout(() => {
-            window.location.href =
-                "https://www.hongsushi.ca/maintenance.html";
-        }, 1500);
+            window.location.href = "https://www.hongsushi.ca/maintenance.html";
+        }, 1200);
     };
 
-    // Attempt to load your required file from the server
+    // Test file on server (must exist)
     testImage.src = "http://174.6.65.67/icon.png?cb=" + Date.now();
 }
 </script>
 </head>
 
 <body onload="checkOnlineStatus();">
-    <div id="onlineStatus">Checking online status, please wait…</div>
+    <div id="onlineStatus">Checking server status, please wait…</div>
 </body>
+
 
 
 
