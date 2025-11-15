@@ -35,38 +35,23 @@
   <div class="loader"></div>
   <div class="status">Checking server status...</div>
 
-  <script>
-    const serverURL = "http://174.6.65.67"; // your main server
-    const redirectURL = "maintenance.html"; // GitHub maintenance page
+ <script>
+async function checkServer() {
+  try {
+    // Try to fetch from the server (HTTP port 80)
+    const response = await fetch("http://174.6.65.67/", { method: "HEAD", mode: "no-cors" });
+    console.log("Server is up");
+    // Optionally redirect to main page if server is up
+    // window.location.href = "https://hongsushi.ca/";
+  } catch (err) {
+    console.log("Server is down, redirecting to maintenance page");
+    window.location.href = "/maintenance.html";
+  }
+}
 
-    // Timeout for fetch
-    const timeout = 7000; // 7 seconds
+// Run on page load
+checkServer();
+</script>
 
-    function checkServer() {
-      const controller = new AbortController();
-      const signal = controller.signal;
-
-      // Set timeout
-      const fetchTimeout = setTimeout(() => {
-        controller.abort();
-      }, timeout);
-
-      fetch(serverURL, { method: 'HEAD', mode: 'no-cors', signal })
-        .then(response => {
-          clearTimeout(fetchTimeout);
-          document.querySelector('.status').textContent = "Server is online.";
-        })
-        .catch(error => {
-          clearTimeout(fetchTimeout);
-          document.querySelector('.status').textContent = "Server unavailable. Redirecting...";
-          // Redirect to maintenance page after a short delay
-          setTimeout(() => {
-            window.location.href = redirectURL;
-          }, 1000);
-        });
-    }
-
-    checkServer();
-  </script>
 </body>
 </html>
