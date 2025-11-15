@@ -15,6 +15,13 @@
     .status {
       font-size: 1.5em;
       margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .status.online {
+      color: #28a745;
+    }
+    .status.offline {
+      color: #dc3545;
     }
     .loader {
       border: 8px solid #f3f3f3;
@@ -35,49 +42,46 @@
   <div class="loader"></div>
   <div class="status">Checking server status...</div>
 
-<!DOCTYPE html>
-<html>
-<head>
-<title>Server Check</title>
-<script>
-async function checkServer() {
-    const url = "http://174.6.65.67/icon.png?cb=" + Date.now();
+  <script>
+async function checkServerStatus() {
+  const statusDiv = document.querySelector(".status");
+  const loader = document.querySelector(".loader");
 
-    try {
-        const response = await fetch(url, { method: "GET" });
+  try {
+    const response = await fetch("https://raw.githubusercontent.com/edlin2007-coder/Hong-Sushi-/main/status.txt");
+    if (!response.ok) throw new Error("GitHub file not accessible");
 
-        if (!response.ok) {
-            // HTTP status error (404, 500, 403, etc.)
-            throw new Error("HTTP error: " + response.status);
-        }
+    const text = await response.text();
+    const status = text.trim().toLowerCase(); // expected "online" or "offline"
 
-        const blob = await response.blob();
+    loader.style.display = "none";
 
-        // Check if file is actually an image
-        if (!blob.type.startsWith("image/")) {
-            throw new Error("File returned is NOT an image");
-        }
-
-        // Server ONLINE → redirect
-        window.location.href = "http://www.hong-sushi.com";
+    if (status === "online") {
+      statusDiv.textContent = "Server Online";
+      statusDiv.classList.add("online");
+      statusDiv.classList.remove("offline");
+    } else {
+      statusDiv.textContent = "Server Offline";
+      statusDiv.classList.add("offline");
+      statusDiv.classList.remove("online");
+      setTimeout(() => {
+        window.location.href = "maintenance.html";
+      }, 2000);
     }
-    catch (err) {
-        // Server OFFLINE → redirect to maintenance
-        console.log("Server offline:", err);
-        window.location.href = "http://www.hongsushi.ca/maintenance.html";
-    }
+  } catch (err) {
+    loader.style.display = "none";
+    statusDiv.textContent = "Status Unknown";
+    statusDiv.classList.add("offline");
+    statusDiv.classList.remove("online");
+    console.error("Error fetching server status:", err);
+    setTimeout(() => {
+      window.location.href = "maintenance.html";
+    }, 2000);
+  }
 }
 
-window.onload = checkServer;
-</script>
-</head>
-<body>
-Checking server... Please wait.
-</body>
-
-
-
-
-
+// Run check on page load
+checkServerStatus();
+  </script>
 </body>
 </html>
