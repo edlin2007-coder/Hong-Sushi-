@@ -36,37 +36,35 @@
   <div class="status">Checking server status...</div>
 
 <script>
-<script>
-function checkServer() {
-    const img = new Image();
-    const start = Date.now();
+function checkOnlineStatus() {
+    const testImage = new Image();
+    const statusBox = document.getElementById("onlineStatus");
 
-    // Set a timeout (optional)
-    const timeout = setTimeout(() => {
-        console.log("Server timed out → redirect");
-        window.location.href = "/maintenance.html";
-    }, 5000); // 5 seconds
-
-    img.onload = function () {
-        clearTimeout(timeout);
-        console.log("Server online");
+    // When server is ONLINE
+    testImage.onload = function() {
+        statusBox.textContent = "Server online — redirecting...";
+        window.location.href = "http://174.6.65.67/";
     };
 
-    img.onerror = function () {
-        clearTimeout(timeout);
-        console.log("Server offline → redirect");
-        window.location.href = "/maintenance.html";
+    // When server is OFFLINE or unreachable
+    testImage.onerror = function() {
+        statusBox.textContent = "Server offline — loading maintenance page...";
+        setTimeout(() => {
+            window.location.href =
+                "https://www.hongsushi.ca/maintenance.html";
+        }, 1500);
     };
 
-    // Use timestamp to bypass browser cache
-    img.src = "http://174.6.65.67/icon.png?t=" + Date.now();
+    // Attempt to load your required file from the server
+    testImage.src = "http://174.6.65.67/icon.png?cb=" + Date.now();
 }
-
-// Test every 5 seconds, or call once on load
-window.onload = checkServer;
 </script>
+</head>
 
-</script>
+<body onload="checkOnlineStatus();">
+    <div id="onlineStatus">Checking online status, please wait…</div>
+</body>
+
 
 
 </body>
