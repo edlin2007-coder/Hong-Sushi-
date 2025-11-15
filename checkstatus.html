@@ -35,34 +35,46 @@
   <div class="loader"></div>
   <div class="status">Checking server status...</div>
 
+<!DOCTYPE html>
+<html>
+<head>
+<title>Server Check</title>
 <script>
-function checkOnlineStatus() {
-    const testImage = new Image();
-    const statusBox = document.getElementById("onlineStatus");
+async function checkServer() {
+    const url = "http://174.6.65.67/icon.png?cb=" + Date.now();
 
-    // Server ONLINE → redirect to main domain
-    testImage.onload = function() {
-        statusBox.textContent = "Server online — loading website...";
-        window.location.href = "https://www.hong-sushi.com/";
-    };
+    try {
+        const response = await fetch(url, { method: "GET" });
 
-    // Server OFFLINE → redirect to maintenance page
-    testImage.onerror = function() {
-        statusBox.textContent = "Server offline — sending to maintenance page...";
-        setTimeout(() => {
-            window.location.href = "https://www.hongsushi.ca/maintenance.html";
-        }, 1200);
-    };
+        if (!response.ok) {
+            // HTTP status error (404, 500, 403, etc.)
+            throw new Error("HTTP error: " + response.status);
+        }
 
-    // Test file on server (must exist)
-    testImage.src = "174.6.65.67/icon.png?cb=" + Date.now();
+        const blob = await response.blob();
+
+        // Check if file is actually an image
+        if (!blob.type.startsWith("image/")) {
+            throw new Error("File returned is NOT an image");
+        }
+
+        // Server ONLINE → redirect
+        window.location.href = "http://www.hong-sushi.com";
+    }
+    catch (err) {
+        // Server OFFLINE → redirect to maintenance
+        console.log("Server offline:", err);
+        window.location.href = "http://www.hongsushi.ca/maintenance.html";
+    }
 }
+
+window.onload = checkServer;
 </script>
 </head>
-
-<body onload="checkOnlineStatus();">
-    <div id="onlineStatus">Checking server status, please wait…</div>
+<body>
+Checking server... Please wait.
 </body>
+
 
 
 
