@@ -15,21 +15,18 @@ jobs:
 
     - name: Check server status and write to file
       run: |
+        TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
         STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://174.6.65.67)
         if [ "$STATUS" -eq 200 ]; then
-          echo "Server is UP at $(date)" > server_status.txt
-          echo "✅ Server is UP"
+          echo "✅ Server is UP at $TIMESTAMP" > server_status.txt
         else
-          echo "Server is DOWN (HTTP $STATUS) at $(date)" > server_status.txt
-          echo "❌ Server is DOWN (HTTP $STATUS)"
+          echo "❌ Server is DOWN (HTTP $STATUS) at $TIMESTAMP" > server_status.txt
         fi
 
-    - name: Commit status file
+    - name: Commit and push status
       run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add server_status.txt
-        git commit -m "Update server status"
+        git commit -m "Update server status at $(date -u +"%Y-%m-%d %H:%M:%S UTC")" || echo "No changes to commit"
         git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
