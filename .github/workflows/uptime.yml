@@ -12,22 +12,23 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        persist-credentials: true
+        fetch-depth: 0
 
     - name: Check server status
       run: |
         STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://174.6.65.67)
-        TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-        echo "{\"status_code\": \"$STATUS\", \"timestamp\": \"$TIMESTAMP\"}" > status.json
-        if [ "$STATUS" -eq 200 ]; then
-          echo "✅ Server is UP"
-        else
-          echo "❌ Server is DOWN (HTTP $STATUS)"
-        fi
+        echo "status_code=$STATUS" >> $GITHUB_ENV
 
-    - name: Commit and push status.json
+    - name: Save status to file
+      run: |
+        echo "{\"server\":\"http://174.6.65.67\",\"status_code\":$STATUS,\"checked_at\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}" > status.json
+
+    - name: Commit and push status
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add status.json
-        git diff --cached --quiet || git commit -m "Update server status at $TIMESTAMP"
+        git diff --cached --quiet || git commit -m "Update server status at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
         git push
