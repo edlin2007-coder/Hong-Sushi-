@@ -1,33 +1,23 @@
-name: Uptime Check
+name: Server Uptime Check
 
-# Run on schedule (GitHub minimum is 5 mins if you use `cron: '*/5 * * * *'`)
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/10 * * * *'  # every 10 minutes
   workflow_dispatch:
 
 jobs:
-  check_up:
+  uptime_check:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check server uptime
-        id: status
-        run: |
-          # Try to reach your site; you can change to port if needed
-          if curl --fail --silent "http://174.6.65.67/"; then
-            echo "UP" > status.txt
-            echo "::set-output name=state::up"
-          else
-            echo "DOWN" > status.txt
-            echo "::set-output name=state::down"
-          fi
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Commit status
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: "uptime-bot"
-          author_email: "uptime-bot@example.com"
-          message: "Uptime status: ${{ steps.status.outputs.state }} at $(date -u)"
-          add: "status.txt"
-
+    - name: Check server status
+      run: |
+        STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://174.6.65.67)
+        if [ "$STATUS" -eq 200 ]; then
+          echo "✅ Server is UP"
+        else
+          echo "❌ Server is DOWN (HTTP $STATUS)"
+        fi
