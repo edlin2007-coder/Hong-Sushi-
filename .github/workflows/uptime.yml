@@ -10,9 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1️⃣ Checkout the repository
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        persist-credentials: true  # ensures git push works with GITHUB_TOKEN
 
+    # 2️⃣ Check server status
     - name: Check server status
       id: check_status
       run: |
@@ -26,6 +30,7 @@ jobs:
         echo "$STATUS_TEXT" > server_status.txt
         echo "status_text=$STATUS_TEXT" >> $GITHUB_ENV
 
+    # 3️⃣ Commit and push the server status
     - name: Commit and push server status
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
@@ -34,3 +39,4 @@ jobs:
         file_pattern: server_status.txt
         commit_user_name: github-actions[bot]
         commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
+        token: ${{ secrets.GITHUB_TOKEN }}   # <-- This line fixes the 403 error
