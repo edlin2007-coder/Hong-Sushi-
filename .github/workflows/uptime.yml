@@ -32,4 +32,5 @@ jobs:
         commit_message: "Update server status at ${{ github.run_id }}"
         branch: main
         file_pattern: server_status.txt
-        token: ${{ secrets.PAT_TOKEN }}
+        commit_user_name: github-actions[bot]
+        commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
