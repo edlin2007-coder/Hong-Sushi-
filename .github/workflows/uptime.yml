@@ -2,7 +2,7 @@ name: Server Uptime Check
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # every 5 minutes
+    - cron: '*/10 * * * *'  # every 10 minutes
   workflow_dispatch:
 
 jobs:
@@ -12,23 +12,12 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-      with:
-        persist-credentials: true
-        fetch-depth: 0
 
     - name: Check server status
       run: |
         STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://174.6.65.67)
-        echo "status_code=$STATUS" >> $GITHUB_ENV
-
-    - name: Save status to file
-      run: |
-        echo "{\"server\":\"http://174.6.65.67\",\"status_code\":$STATUS,\"checked_at\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}" > status.json
-
-    - name: Commit and push status
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add status.json
-        git diff --cached --quiet || git commit -m "Update server status at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-        git push
+        if [ "$STATUS" -eq 200 ]; then
+          echo "✅ Server is UP"
+        else
+          echo "❌ Server is DOWN (HTTP $STATUS)"
+        fi
