@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write   # IMPORTANT - allows commit & push
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -19,9 +19,9 @@ jobs:
       - name: Check server status
         run: |
           if curl -Is http://174.6.65.67 | head -n 1 | grep "200" > /dev/null; then
-            echo "✅ Server is UP at $(date -u +"%Y-%m-%d %H:%M:%S UTC")" > server_status.txt
+            echo "✅ Server is UP at $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")" > server_status.txt
           else
-            echo "❌ Server is DOWN at $(date -u +"%Y-%m-%d %H:%M:%S UTC")" > server_status.txt
+            echo "❌ Server is DOWN at $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")" > server_status.txt
           fi
 
       - name: Commit changes
