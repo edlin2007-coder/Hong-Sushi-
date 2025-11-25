@@ -2,7 +2,7 @@ name: Check Server Status
 
 on:
   schedule:
-    - cron: "*/10 * * * *"   # check every 10 minutes
+    - cron: "* * * * *"   # check every 1 minute
   workflow_dispatch:
 
 jobs:
