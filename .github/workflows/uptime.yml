@@ -18,7 +18,7 @@ jobs:
 
       - name: Check server status
         run: |
-          if curl -Is https://www.hong-sushi.com | head -n 1 | grep "200" > /dev/null; then
+          if curl -Is http://174.6.65.67 | head -n 1 | grep "200" > /dev/null; then
             echo "✅ Server is UP at $(date -u +"%Y-%m-%d %H:%M:%S UTC")" > server_status.txt
           else
             echo "❌ Server is DOWN at $(date -u +"%Y-%m-%d %H:%M:%S UTC")" > server_status.txt
