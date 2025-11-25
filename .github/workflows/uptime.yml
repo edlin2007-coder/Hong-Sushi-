@@ -10,9 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1️⃣ Checkout the repository
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    # 2️⃣ Check server status
     - name: Check server status
       id: check_status
       run: |
@@ -26,6 +28,7 @@ jobs:
         echo "$STATUS_TEXT" > server_status.txt
         echo "status_text=$STATUS_TEXT" >> $GITHUB_ENV
 
+    # 3️⃣ Commit and push server status to repo
     - name: Commit and push server status
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
@@ -35,10 +38,11 @@ jobs:
         commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
         token: ${{ secrets.GITHUB_TOKEN }}
 
+    # 4️⃣ Deploy to GitHub Pages
     - name: Deploy to GitHub Pages
       if: success()
-      uses: peaceiris/actions-gh-pages@v6
+      uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./           # root directory, adjust if you want a specific folder
-        destination_dir: .        # publish server_status.txt to root of your Pages site
+        publish_dir: ./           # root folder; adjust if server_status.txt is in a subfolder
+        destination_dir: .        # deploy to root of Pages site
