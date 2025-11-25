@@ -1,8 +1,8 @@
-name: Server Uptime Check
+name: Server Uptime Check & Deploy
 
 on:
   schedule:
-    - cron: '*/55555 * * * *'
+    - cron: '*/5 * * * *'  # every 5 minutes
   workflow_dispatch:
 
 jobs:
@@ -10,28 +10,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: true  # Important for push
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Check server status
-        id: check_status
-        run: |
-          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://174.6.65.67)
-          if [ "$STATUS" -eq 200 ]; then
-            STATUS_TEXT="✅ Server is UP at $TIMESTAMP"
-          else
-            STATUS_TEXT="❌ Server is DOWN (HTTP $STATUS) at $TIMESTAMP"
-          fi
-          echo "$STATUS_TEXT" > server_status.txt
-          echo "status_text=$STATUS_TEXT" >> $GITHUB_ENV
+    - name: Check server status
+      id: check_status
+      run: |
+        TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://174.6.65.67)
+        if [ "$STATUS" -eq 200 ]; then
+          STATUS_TEXT="✅ Server is UP at $TIMESTAMP"
+        else
+          STATUS_TEXT="❌ Server is DOWN (HTTP $STATUS) at $TIMESTAMP"
+        fi
+        echo "$STATUS_TEXT" > server_status.txt
+        echo "status_text=$STATUS_TEXT" >> $GITHUB_ENV
 
-      - name: Commit and push server status
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "Update server status at ${{ github.run_id }}"
-          file_pattern: server_status.txt
-          commit_user_name: github-actions[bot]
-          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
+    - name: Commit and push server status
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "Update server status at ${{ github.run_id }}"
+        file_pattern: server_status.txt
+        commit_user_name: github-actions[bot]
+        commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Deploy to GitHub Pages
+      if: success()
+      uses: peaceiris/actions-gh-pages@v6
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./           # root directory, adjust if you want a specific folder
+        destination_dir: .        # publish server_status.txt to root of your Pages site
