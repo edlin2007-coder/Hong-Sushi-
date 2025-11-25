@@ -2,7 +2,7 @@ name: Check Server Status
 
 on:
   schedule:
-    - cron: "* * * * *"   # check every 1 minute
+    - cron: "* * * * *"   # every 1 minute
   workflow_dispatch:
 
 jobs:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write   # needed to commit
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -18,12 +18,16 @@ jobs:
 
       - name: Check server status
         run: |
-          # Check server with timeout (12 sec total, 5 sec handshake)
+          # Run the server check (max 12s)
           if curl -Is --max-time 12 --connect-timeout 5 http://174.6.65.67 | head -n 1 | grep "200" > /dev/null; then
-            echo "Server is UP at $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")" > server_status.txt
+            NEW_ENTRY="UP   - $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")"
           else
-            echo "Server is DOWN at $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")" > server_status.txt
+            NEW_ENTRY="DOWN - $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")"
           fi
+
+          # Prepend new entry, keep only top 3
+          echo "$NEW_ENTRY" | cat - server_status.txt 2>/dev/null | head -n 3 > new_status.txt
+          mv new_status.txt server_status.txt
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
