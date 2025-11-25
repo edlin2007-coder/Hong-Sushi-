@@ -2,7 +2,7 @@ name: Check Server Status
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # check every 10 minutes
+    - cron: "*/10 * * * *"   # check every 10 minutes
   workflow_dispatch:
 
 jobs:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: write   # needed to commit
 
     steps:
       - name: Checkout repository
@@ -18,10 +18,11 @@ jobs:
 
       - name: Check server status
         run: |
-          if curl -Is http://174.6.65.67 | head -n 1 | grep "200" > /dev/null; then
-            echo "✅ Server is UP at $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")" > server_status.txt
+          # Check server with timeout (12 sec total, 5 sec handshake)
+          if curl -Is --max-time 12 --connect-timeout 5 http://174.6.65.67 | head -n 1 | grep "200" > /dev/null; then
+            echo "Server is UP at $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")" > server_status.txt
           else
-            echo "❌ Server is DOWN at $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")" > server_status.txt
+            echo "Server is DOWN at $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")" > server_status.txt
           fi
 
       - name: Commit changes
