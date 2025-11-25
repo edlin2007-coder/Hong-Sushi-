@@ -2,7 +2,7 @@ name: Server Uptime Check & Deploy
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # every 5 minutes
+    - cron: '*/500 * * * *'  # every 5 minutes
   workflow_dispatch:
 
 jobs:
