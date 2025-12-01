@@ -28,8 +28,8 @@ jobs:
           # Build new entry with Pacific Time
           NEW_ENTRY="$STATUS - $(TZ='America/Los_Angeles' date +"%Y-%m-%d %H:%M:%S %Z")"
 
-          # Prepend new entry to server_status.txt, keep only top 3
-          echo "$NEW_ENTRY" | cat - server_status.txt 2>/dev/null | head -n 3 > new_status.txt
+          # Prepend new entry to server_status.txt, keep only top 1
+          echo "$NEW_ENTRY" | cat - server_status.txt 2>/dev/null | head -n 1 > new_status.txt
           mv new_status.txt server_status.txt
 
           # Export status for conditional steps
